@@ -68,7 +68,7 @@ data_dir = "Cat_Dog_data"
 
 Le dossier Cat_Dog_data doit donc être présent dans le répertoire de travail sélectionné.
 
-Le dossier `train` est utilisé pour l'entraînement des modèles.
+Le dossier `train` est utilisé pour l'entraînement des modèles. cependant, 
 Le dossier `test` est utilisé pour l'évaluation des performances.
 
 ---
@@ -115,7 +115,7 @@ torch.optim.Adam(
 ```python
 torch.optim.SGD(
     model.parameters(),
-    lr=0.01,
+    lr=0.001,
     momentum=0.9
 )
 ```
@@ -179,6 +179,13 @@ best_transfer_model.load_state_dict(
 )
 ```
 ## Choix expérimentaux
+## Dataset preparation
+Le dataset Cats  vs Dogs a été chargé  avec "imageFolder". Les données d'entrainement ont été divisées en : 
+- 80% pour l'apprentissage (Train)
+- 20% pour la validation (Validation)
+Un ensemble de test indépendant a été utilisé pour l'évaluation finale des modèles. 
+les pour le test sont dans un autre dossier séparé.
+
 ### Taille des images (96 × 96)
 Les images ont été redimensionnées à **96 × 96 pixels** afin de réduire le coût computationnel de l'entraînement tout en conservant suffisamment d'informations visuelles pour distinguer les chats des chiens.
 Une taille plus grande (par exemple 128 × 128 ou 224 × 224) aurait augmenté significativement le temps d'entraînement, particulièrement lors de l'exécution sur CPU.
@@ -195,7 +202,7 @@ Cette valeur s'est révélée adaptée sur Google Colab, notamment lorsque les e
 Le nombre d'époques a été volontairement limité à 10 afin de maintenir des temps d'exécution raisonnables tout en permettant la comparaison des différentes approches (CNN from scratch, Adam vs SGD et Transfer Learning avec ResNet18).
 
 ### Choix de ResNet18
-ResNet18 a été retenu pour l'expérience de transfert d'apprentissage car il offre un bon compromis entre performances et coût de calcul. Son architecture est suffisamment légère pour être entraînée sur CPU tout en bénéficiant des connaissances acquises sur ImageNet.
+ResNet18 a été retenu pour l'expérience de transfert d'apprentissage car il offre un bon compromis entre performances et coût de calcul. Son architecture est suffisamment légère pour être entraînée sur CPU également tout en bénéficiant des connaissances acquises sur ImageNet.
 
 ---
 
@@ -205,8 +212,8 @@ ResNet18 a été retenu pour l'expérience de transfert d'apprentissage car il o
 
 | Optimiseur | Loss        | Accuracy    | Precision   | Recall      |
 | ---------- | ----------- | ----------- | ----------- | ----------- |
-| Adam       | 0,4616      | 0,7756      | 0,8368      | 0,6848      |
-| SGD        | 0,6932      | 0,5004      | 0,5556      | 0,0040      |
+| Adam       | 0,4768      | 0,7632      | 0,8063      | 0,6928      |
+| SGD        | 0,6004      | 0,6836      | 0,8637      | 0,4350      |
 
 Adam a montré une convergence plus rapide et de meilleures performances que SGD sur le CNN entraîné from scratch.
 
@@ -214,12 +221,12 @@ Adam a montré une convergence plus rapide et de meilleures performances que SGD
 
 | Modèle                     | Loss        | Accuracy    | Precision   | Recall      |
 | -------------------------- | ----------- | ----------- | ----------- | ----------- |
-| CNN From Scratch           | 0,4616      | 0,7756      | 0,8368      | 0,6848      |
-| ResNet18 Transfer Learning | 0,2957      | 0,8756      | 0,8671      | 0,8872      |
+| CNN From Scratch           | 0,4768      | 0,7632      | 0,8063      | 0,6928      |
+| ResNet18 Transfer Learning | 0,3023      | 0,8684      | 0,8847      | 0,8472      |
 
 Le modèle ResNet18 pré-entraîné a montré une convergence plus rapide et de meilleures performances globales que le CNN entraîné from scratch.
 
-La matrice de confusion du modele ResNet8 montre une bonne capacité de discrimination entre les classes "chat" et chien. Sur un total de 2500 images de test, 2189 ont été correctement classées, ce qui correspond à une exaltitude de 87,76%. Les erreurs de classification restent limitées avec 170 chats confondus avec des chiens et 141 chiens confondus avec des chats. Les valeurs de précision et de rappel superieurs à 86% pour les deux classes confirment la robustesse du modèle et sa bonne capacité de généralisation.
+La matrice de confusion du modele ResNet8 montre une bonne capacité de discrimination entre les classes "chat" et chien. Sur un total de 2500 images de test, 2171 ont été correctement classées, ce qui correspond à une exaltitude  de 86,84%. Les erreurs de classification restent limitées avec 191 chats confondus avec des chiens et 138 chiens confondus avec des chats. Les valeurs de précision et de rappel superieurs à 84% pour les deux classes confirment la robustesse du modèle et sa bonne capacité de généralisation.
 
 Les courbes et graphs générées dans le notebook présentent :
 
@@ -239,7 +246,7 @@ Le modèle ResNet18 utilisant le transfert d'apprentissage bénéficie des repr�
 
 Les résultats confirment l'intérêt du transfert learning pour les jeux de données, où l'entraînement complet d'un modèle depuis zéro peut être plus difficile et plus coûteux en calcul.
 
-Cependant, des résultats issue de la matrix de confusion, les erreurs de classification restent limitées avec 170 chats confondus avec des chiens et 141 chiens confondus avec des chats. Ces erreurs sont principalement dues à des similitudes visuelles entre les deux classes ou à des conditions d'acquisition difficiles (flou, faible contraste, posture inhabituelle). Malgré ces quelques confusions, le modèle ResNet18 obtient de bonnes performances globales grâce au transfert d'apprentissage.
+Cependant, des résultats issue de la matrix de confusion, les erreurs de classification restent limitées avec 191 chats confondus avec des chiens et 138 chiens confondus avec des chats. Ces erreurs sont principalement dues à des similitudes visuelles entre les deux classes ou à des conditions d'acquisition difficiles (flou, faible contraste, posture inhabituelle). Malgré ces quelques confusions, le modèle ResNet18 obtient de bonnes performances globales grâce au transfert d'apprentissage.
 ---
 
 ## Limites et pistes d'amélioration
